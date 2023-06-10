@@ -1,10 +1,15 @@
 public class FSM {
-    // Fields (variables)
-    private int[] Stack;
-    private int[] Queue;
+     // Fields (variables)
+    private int[] stack;
+    private int[] queue;
 
-    // Constructor
-    public FSM() {
+    //private State[] Array;
+    private State fsm;
+    private String[] specialDict = new String[] {"\\", "(", ")", "*", "+", "?", ".", "[", "]", "|"}; // ! not currently including not
+    
+    
+    
+    public FSM(String expression) {
+        
     }
-
 }
