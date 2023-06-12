@@ -30,7 +30,8 @@ public class FSM {
 
     public static String extractInnermostBracketText(String text) {
         int start = text.lastIndexOf("(");
-        int end = text.indexOf(")", start);
+         //there could be a literal bracket match ie '\)'
+        int end = text.indexOf(")", start); 
         if (start != -1 && end != -1 && start < end) {
             return extractInnermostBracketText(text.substring(start + 1, end));
         } else {
