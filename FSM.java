@@ -30,8 +30,7 @@ public class FSM {
 
     public static String extractInnermostBracketText(String text) {
         int start = text.lastIndexOf("(");
-         //there could be a literal bracket match ie '\)'
-        int end = text.indexOf(")", start); 
+        int end = text.indexOf(")", start);
         if (start != -1 && end != -1 && start < end) {
             return extractInnermostBracketText(text.substring(start + 1, end));
         } else {
@@ -41,17 +40,47 @@ public class FSM {
 
     //Converts the Expression into the three-array using the State class
     public void convert(String expression) {
+
+        boolean ignoreNext = false;
+
         //Loops through every letter in expression
         for(int i = 0; i < expression.length(); i++){
+
+            String currChar = expression.substring(i, i+1);
             boolean specialCheck = false;
             for (String specialStr : specialDict) { // Makes sure the letter doesn't have a special function
-                if(specialStr.equals(expression.substring(0, 1))){
+                if(specialStr.equals(currChar)){
                     specialCheck = true;
                 }
             }
 
-            if(specialCheck){
+            if(specialCheck && !ignoreNext){
                 //Code to deal with special Characters
+                State newState = new State(stateIndex, "★");
+                if(currChar.equals("\\")){
+                    ignoreNext = true;
+                    connectPathTo(array[prevState.getIndex()-1], stateIndex);
+                }
+                else if(currChar.equals(".")){
+                    
+                }
+
+
+                else if(currChar.equals("*")){
+                    connectPathTo(array[prevState.getIndex()-1], stateIndex);
+                    connectPathTo(prevState, stateIndex);
+                    connectPathTo(prevState, prevState.getIndex());
+                }
+                else if(currChar.equals("+")){
+                    connectPathTo(prevState, prevState.getIndex());
+                }
+                else if(currChar.equals("?")){
+                    //State newState = new State(stateIndex, currChar);   
+                }
+                prevState = newState;
+                stateIndex++;
+
+                addtoArray(newState);
             }
             //If the letter isn't special connect it to the previous state
             // using either the first or second path
@@ -61,19 +90,30 @@ public class FSM {
                     prevState.setFirPath(stateIndex);
 
                 else if(prevState.getSecPath()==-1 && prevState.getIndex()!=0)
-                    prevState.setFirPath(stateIndex);
+                    prevState.setSecPath(stateIndex);
 
                 prevState = newState;
                 stateIndex++;
 
-                State[] newArray = new State[array.length+1];
+                addtoArray(newState);
+            }
+        }
+    }
+
+    public void connectPathTo(State originState, int setValue) {
+                    if(originState.getFirPath()==-1)
+                        originState.setFirPath(setValue);
+                    else if(prevState.getSecPath()==-1)
+                        originState.setSecPath(setValue);
+    }
+    
+    public void addtoArray(State inputState) {
+        State[] newArray = new State[array.length+1];
                 for (int j = 0; j < array.length; j++) {
                     newArray[j] = array[j];
                 }
-                newArray[array.length] = newState;
+                newArray[array.length] = inputState;
                 array = newArray;
-            }
-        }
     }
 
     public void print() {
