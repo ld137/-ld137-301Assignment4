@@ -10,9 +10,12 @@
 public class REcompile {
     public static void main(String[] args) {
 
-        String expression = args[0];
+        // String expression = args[0];
+        String expression = "Hello";
         
         if(isValid(expression)){
+
+            FSM fsm = new FSM(expression);
             
             
         }

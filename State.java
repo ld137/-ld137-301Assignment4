@@ -2,15 +2,14 @@ public class State {
 
     private int index;
     private String expression;
-    private String fullExpression;
     private int firPath;
     private int secPath;
     
-    State(int index, String fExp, int first, int second) {
+    State(int index, String exp) {
         this.index = index;
-        this.fullExpression = fExp;
-        this.firPath = first;
-        this.secPath = second;
+        this.expression = exp;
+        this.firPath = 0;
+        this.secPath = 0;
     }
 
 
