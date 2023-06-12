@@ -11,13 +11,10 @@ public class REcompile {
     public static void main(String[] args) {
 
         // String expression = args[0];
-        String expression = "Hello";
+        String expression = "A(AA(ABZY))\\)C";
         
         if(isValid(expression)){
-
             FSM fsm = new FSM(expression);
-            
-            
         }
         else
             System.err.println("Invalid Regex Expression");

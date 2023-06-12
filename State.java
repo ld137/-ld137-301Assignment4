@@ -8,8 +8,8 @@ public class State {
     State(int index, String exp) {
         this.index = index;
         this.expression = exp;
-        this.firPath = 0;
-        this.secPath = 0;
+        this.firPath = -1;
+        this.secPath = -1;
     }
 
 
