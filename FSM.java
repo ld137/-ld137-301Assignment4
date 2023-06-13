@@ -11,7 +11,7 @@ public class FSM {
     private int stateIndex = 1;
     private String[] specialDict = new String[] {"\\", "(", ")", "*", "+", "?", ".", "[", "]", "|"}; // ! not currently including not
     
-    private int currIndex = 0;
+    //private int currIndex = 0;
     private String fullExpression;
     
     public FSM(String expression) {
@@ -28,6 +28,7 @@ public class FSM {
         // System.err.println(newString.substring(0,1));
     }
 
+    //Might actually be useless Should probably just go left to right until I hit a bracket
     public static String extractInnermostBracketText(String text) {
         int start = text.lastIndexOf("(");
         int end = text.indexOf(")", start);
@@ -42,6 +43,8 @@ public class FSM {
     public void convert(String expression) {
 
         boolean ignoreNext = false;
+        // boolean alternationCheck = false; Got an idea if it doesn't work uncomment this
+        int alternationCheck = -1;
 
         //Loops through every letter in expression
         for(int i = 0; i < expression.length(); i++){
@@ -54,28 +57,66 @@ public class FSM {
                 }
             }
 
+            
             if(specialCheck && !ignoreNext){
                 //Code to deal with special Characters
-                State newState = new State(stateIndex, "★");
+                State newState = new State(stateIndex, "☆");
                 if(currChar.equals("\\")){
                     ignoreNext = true;
                     connectPathTo(array[prevState.getIndex()-1], stateIndex);
                 }
-                else if(currChar.equals(".")){
-                    
+                else if(alternationCheck == 0){
+                newState = new State(stateIndex, expression.substring(i, i+1));
+
+                alternationCheck++;
                 }
+                else if(alternationCheck == 1){
+                    newState = new State(stateIndex, expression.substring(i, i+1));
 
-
-                else if(currChar.equals("*")){
-                    connectPathTo(array[prevState.getIndex()-1], stateIndex);
                     connectPathTo(prevState, stateIndex);
-                    connectPathTo(prevState, prevState.getIndex());
+                    connectPathTo(array[stateIndex-3], stateIndex);
+
+
+                    alternationCheck = -1;
+                }
+                else if(currChar.equals(".")){
+                    //I think most of this implementation is done when checking if
+                    //text matches
+                    newState.setExpression(".");
+                    connectPathTo(prevState, stateIndex);
+                }
+                else if(currChar.equals("*")){
+
+                    connectPathTo(prevState, stateIndex);
+                    connectPathTo(newState, stateIndex-1);
+                    connectPathTo(array[prevState.getIndex()-1], stateIndex);
+
+                    // This works just want to implement it differently
+                    // connectPathTo(array[prevState.getIndex()-1], stateIndex);
+                    // connectPathTo(prevState, stateIndex);
+                    // connectPathTo(prevState, prevState.getIndex());
                 }
                 else if(currChar.equals("+")){
                     connectPathTo(prevState, prevState.getIndex());
                 }
                 else if(currChar.equals("?")){
-                    //State newState = new State(stateIndex, currChar);   
+
+                    connectPathTo(prevState, stateIndex);
+                    connectPathTo(array[stateIndex-2], stateIndex);
+                }
+                else if(currChar.equals("|")){ // pain
+
+                    State twoBack = array[stateIndex-2];
+                    if(twoBack.getFirPath() == prevState.getIndex())
+                        twoBack.setFirPath(stateIndex);
+                    else if(twoBack.getSecPath() == prevState.getIndex())
+                        twoBack.setSecPath(stateIndex);
+
+                    connectPathTo(newState, prevState.getIndex());
+                    connectPathTo(newState, stateIndex + 1);
+                    //connectPathTo(array[prevState.getIndex()-1], stateIndex); //maybe same as array[stateIndex - 2]
+
+                    alternationCheck = 0;
                 }
                 prevState = newState;
                 stateIndex++;
