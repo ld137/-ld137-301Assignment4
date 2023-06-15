@@ -56,6 +56,7 @@ public class FSM {
         for(int i = 0; i < expression.length(); i++){
 
             String currChar = expression.substring(i, i+1);
+        
             boolean specialCheck = false;
             for (String specialStr : specialDict) { // Makes sure the letter doesn't have a special function
                 if(specialStr.equals(currChar)){
@@ -75,18 +76,21 @@ public class FSM {
                 else if (currChar.equals("(")) {
                     // Handle opening bracket
 
-                    State branch = new State(stateIndex, "☆");
-                    newState.setIndex(++stateIndex);
-                    newState.setExpression("☆");
+                    //State branch = new State(stateIndex, "☆");
+                    newState.setIndex(stateIndex);
+                    newState.setExpression("☆(");
 
-                    connectPathTo(prevState, branch.getIndex());
-                    connectPathTo(branch, newState.getIndex());
+                    // connectPathTo(prevState, branch.getIndex());
+                    // connectPathTo(branch, newState.getIndex());
+
+                    connectPathTo(prevState, newState.getIndex());
                     
-                    addtoArray(branch);
-                    stateStack.push(branch);
+                    // addtoArray(branch);
+                    // stateStack.push(branch);
+                    stateStack.push(newState);
                 } else if (currChar.equals(")")) {
                     // Handle closing bracket
-                    newState.setExpression("☆");
+                    newState.setExpression("☆)");
                     State openingBracketState = stateStack.pop();
                     //connectPathTo(openingBracketState, stateIndex);
                     connectPathTo(prevState, stateIndex);
@@ -177,13 +181,17 @@ public class FSM {
                     alternationCheck = -1;
                 }
 
-                //else if(prevState.getFirPath()==-1 && prevState.getIndex()!=0)
-                else if(prevState.getFirPath()==-1)
-                    prevState.setFirPath(stateIndex);
 
-                //else if(prevState.getSecPath()==-1 && prevState.getIndex()!=0)
-                else if(prevState.getSecPath()==-1)
-                    prevState.setSecPath(stateIndex);
+
+                connectPathTo(array[stateIndex-1], stateIndex);
+
+                // //else if(prevState.getFirPath()==-1 && prevState.getIndex()!=0)
+                // else if(array[stateIndex-1].getFirPath()==-1)
+                //     array[stateIndex-1].setFirPath(stateIndex);
+
+                // //else if(prevState.getSecPath()==-1 && prevState.getIndex()!=0)
+                // else if(array[stateIndex-1].getSecPath()==-1)
+                //     array[stateIndex-1].setSecPath(stateIndex);
 
                 prevState = newState;
                 stateIndex++;
@@ -194,10 +202,12 @@ public class FSM {
     }
 
     public void connectPathTo(State originState, int setValue) {
-        if(originState.getFirPath()==-1)
-            originState.setFirPath(setValue);
-        else if(prevState.getSecPath()==-1)
-            originState.setSecPath(setValue);
+        if(originState.getFirPath()!=setValue && originState.getSecPath()!=setValue){
+            if(originState.getFirPath()==-1)
+                originState.setFirPath(setValue);
+            else if(originState.getSecPath()==-1)
+                originState.setSecPath(setValue);
+        }
     }
     
     public void addtoArray(State inputState) {
