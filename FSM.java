@@ -78,7 +78,7 @@ public class FSM {
 
                     //State branch = new State(stateIndex, "☆");
                     newState.setIndex(stateIndex);
-                    newState.setExpression("☆(");
+                    newState.setExpression("☆");
 
                     // connectPathTo(prevState, branch.getIndex());
                     // connectPathTo(branch, newState.getIndex());
@@ -90,7 +90,7 @@ public class FSM {
                     stateStack.push(newState);
                 } else if (currChar.equals(")")) {
                     // Handle closing bracket
-                    newState.setExpression("☆)");
+                    newState.setExpression("☆");
                     State openingBracketState = stateStack.pop();
                     //connectPathTo(openingBracketState, stateIndex);
                     connectPathTo(prevState, stateIndex);
