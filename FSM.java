@@ -77,7 +77,7 @@ public class FSM {
 
                     State branch = new State(stateIndex, "☆");
                     newState.setIndex(++stateIndex);
-                    newState.setExpression("☆(");
+                    newState.setExpression("☆");
 
                     connectPathTo(prevState, branch.getIndex());
                     connectPathTo(branch, newState.getIndex());
@@ -86,10 +86,11 @@ public class FSM {
                     stateStack.push(branch);
                 } else if (currChar.equals(")")) {
                     // Handle closing bracket
-                    newState.setExpression("☆)");
+                    newState.setExpression("☆");
                     State openingBracketState = stateStack.pop();
                     //connectPathTo(openingBracketState, stateIndex);
                     connectPathTo(prevState, stateIndex);
+                    connectPathTo(newState, stateIndex+1); //seemingly works
                     prevState = openingBracketState;
 
                     stateIndex++;
@@ -117,8 +118,9 @@ public class FSM {
                 else if(currChar.equals("*")){
 
                     connectPathTo(prevState, stateIndex); // Implements 0 times
-                    connectPathTo(newState, prevState.getIndex()-1); // Implements many times
-                    //connectPathTo(array[prevState.getIndex()-1], stateIndex); // Maybe useless?
+                    //connectPathTo(newState, prevState.getIndex()-1); // Implements many times
+                    connectPathTo(newState, prevState.getIndex());
+                    connectPathTo(array[prevState.getIndex()-1], stateIndex); // Maybe useless?
 
                     // This works just want to implement it differently
                     // connectPathTo(array[prevState.getIndex()-1], stateIndex);
@@ -175,10 +177,12 @@ public class FSM {
                     alternationCheck = -1;
                 }
 
-                else if(prevState.getFirPath()==-1 && prevState.getIndex()!=0)
+                //else if(prevState.getFirPath()==-1 && prevState.getIndex()!=0)
+                else if(prevState.getFirPath()==-1)
                     prevState.setFirPath(stateIndex);
 
-                else if(prevState.getSecPath()==-1 && prevState.getIndex()!=0)
+                //else if(prevState.getSecPath()==-1 && prevState.getIndex()!=0)
+                else if(prevState.getSecPath()==-1)
                     prevState.setSecPath(stateIndex);
 
                 prevState = newState;
