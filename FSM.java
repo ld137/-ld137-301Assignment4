@@ -216,6 +216,10 @@ public class FSM {
                 }
             }
         }
+
+        State closingState = new State(stateIndex, "★");
+        addtoArray(closingState);
+        connectPathTo(prevState, stateIndex);
     }
 
     public void connectPathTo(State originState, int setValue) {
