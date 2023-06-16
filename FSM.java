@@ -85,7 +85,7 @@ public class FSM {
 
                     //State branch = new State(stateIndex, "☆");
                     newState.setIndex(stateIndex);
-                    newState.setExpression("☆(");
+                    newState.setExpression("☆");
 
                     // connectPathTo(prevState, branch.getIndex());
                     // connectPathTo(branch, newState.getIndex());
@@ -97,7 +97,7 @@ public class FSM {
                     stateStack.push(newState);
                 } else if (currChar.equals(")")) {
                     // Handle closing bracket
-                    newState.setExpression("☆)");
+                    newState.setExpression("☆");
                     State openingBracketState = stateStack.pop();
                     //connectPathTo(openingBracketState, stateIndex);
                     connectPathTo(prevState, stateIndex);
@@ -132,7 +132,9 @@ public class FSM {
                     connectPathTo(prevState, stateIndex); // Implements 0 times
                     //connectPathTo(newState, prevState.getIndex()-1); // Implements many times
                     connectPathTo(newState, prevState.getIndex());
-                    connectPathTo(array[prevState.getIndex()-1], stateIndex); // Maybe useless?
+
+                    connectPathTo(array[stateIndex-1], stateIndex);
+                    connectPathTo(array[prevState.getIndex()], stateIndex); // Maybe useless?
 
                     // This works just want to implement it differently
                     // connectPathTo(array[prevState.getIndex()-1], stateIndex);
@@ -164,6 +166,7 @@ public class FSM {
                 else if(currChar.equals("[")){
                     alternationCheck = 10;
                     stateStack.push(prevState);
+                    ignoreNext= true;
                     //stateStack.push(newState);
                 }
                 // else if(currChar.equals("]")){
@@ -202,8 +205,10 @@ public class FSM {
                     
                     //code here to make the branch
                     State openingBracketState = stateStack.pop();
-                    prevState = openingBracketState;
-                    // connectPathTo(prevState, stateIndex);
+                    //prevState = openingBracketState;
+                    connectPathTo(prevState, stateIndex);
+                    prevState = newState;
+
 
                     for(int j = 0; j < alternationList.size(); j++){
                         
@@ -228,6 +233,7 @@ public class FSM {
                         //addtoArray(new State(j+stateIndex, expression));
                     }
                     newState.setIndex(stateIndex);
+                    newState.setExpression("☆");
                     connectPathTo(array[stateIndex-1], stateIndex);
                     prevState = openingBracketState;
 
@@ -239,6 +245,7 @@ public class FSM {
                     ignoreNext = false;
                     stateIndex++;
                     addtoArray(newState);
+                    alternationCheck = -1;
                     continue;
                 }
                 else if(alternationCheck>10){
