@@ -15,41 +15,21 @@ public class FSM {
     
     //Use this when encountering a square bracket
     private List<String> alternationList = new ArrayList<>();
-    //private int currIndex = 0;
-    //private String fullExpression;
     
     public FSM(String expression) {
-        //this.fullExpression = expression;
-        // this.fullExpression = "A(AA(AB))C";
 
         State startingState = new State(0, "★");
         array = new State[]{startingState};
         prevState = startingState;
-        //String newString = extractInnermostBracketText(fullExpression);
-        //String newString = extractInnermostBracketText(expression);
 
-        //convert(newString);
         convert(expression);
         print();
-        // System.err.println(newString.substring(0,1));
     }
-
-    // Might actually be useless Should probably just go left to right until I hit a bracket
-    // public static String extractInnermostBracketText(String text) {
-    //     int start = text.lastIndexOf("(");
-    //     int end = text.indexOf(")", start);
-    //     if (start != -1 && end != -1 && start < end) {
-    //         return extractInnermostBracketText(text.substring(start + 1, end));
-    //     } else {
-    //         return text;
-    //     }
-    // }
 
     //Converts the Expression into the three-array using the State class
     public void convert(String expression) {
 
         boolean ignoreNext = false;
-        // boolean alternationCheck = false; Got an idea if it doesn't work uncomment this
         int alternationCheck = -1;
 
         //for brackets
@@ -59,8 +39,6 @@ public class FSM {
         for(int i = 0; i < expression.length(); i++){
 
             String currChar = expression.substring(i, i+1);
-
-            
         
             boolean specialCheck = false;
             for (String specialStr : specialDict) { // Makes sure the letter doesn't have a special function
@@ -69,7 +47,6 @@ public class FSM {
                     break;
                 }
             }
-
             
             if(specialCheck && !ignoreNext){
                 //Code to deal with special Characters
@@ -83,17 +60,11 @@ public class FSM {
                 else if (currChar.equals("(")) {
                     // Handle opening bracket
 
-                    //State branch = new State(stateIndex, "☆");
                     newState.setIndex(stateIndex);
                     newState.setExpression("☆");
 
-                    // connectPathTo(prevState, branch.getIndex());
-                    // connectPathTo(branch, newState.getIndex());
-
                     connectPathTo(prevState, newState.getIndex());
                     
-                    // addtoArray(branch);
-                    // stateStack.push(branch);
                     stateStack.push(newState);
                 } else if (currChar.equals(")")) {
                     // Handle closing bracket
@@ -130,16 +101,11 @@ public class FSM {
                 else if(currChar.equals("*")){
 
                     connectPathTo(prevState, stateIndex); // Implements 0 times
-                    //connectPathTo(newState, prevState.getIndex()-1); // Implements many times
-                    connectPathTo(newState, prevState.getIndex());
+                    connectPathTo(newState, prevState.getIndex());// Implements many times
 
                     connectPathTo(array[stateIndex-1], stateIndex);
                     connectPathTo(array[prevState.getIndex()], stateIndex); // Maybe useless?
 
-                    // This works just want to implement it differently
-                    // connectPathTo(array[prevState.getIndex()-1], stateIndex);
-                    // connectPathTo(prevState, stateIndex);
-                    // connectPathTo(prevState, prevState.getIndex());
                 }
                 else if(currChar.equals("+")){
                     connectPathTo(prevState, prevState.getIndex());
@@ -159,7 +125,6 @@ public class FSM {
 
                     connectPathTo(newState, prevState.getIndex());
                     connectPathTo(newState, stateIndex + 1);
-                    //connectPathTo(array[prevState.getIndex()-1], stateIndex); //maybe same as array[stateIndex - 2]
 
                     alternationCheck = 0;
                 }
@@ -167,11 +132,7 @@ public class FSM {
                     alternationCheck = 10;
                     stateStack.push(prevState);
                     ignoreNext= true;
-                    //stateStack.push(newState);
                 }
-                // else if(currChar.equals("]")){
-                //     alternationCheck = -1;
-                // }
                 if(!currChar.equals(")") && alternationCheck < 10){
                     prevState = newState;
                     stateIndex++;
@@ -184,31 +145,17 @@ public class FSM {
             else{ 
                 State newState = new State(stateIndex, expression.substring(i, i+1));
 
-                // if(alternationCheck >= 11 && currChar != "]"){
-                //     alternationList.add(currChar);
-                //     continue;        
-                // }
-                // else if(alternationCheck >= 10){
-
-                // }
-                // if(alternationCheck == 10){
-                //     alternationList.add(currChar);
-                //     alternationCheck++;
-                // }
                 if(alternationCheck==10){
                     alternationList.add(currChar);
                     alternationCheck++;
                 }
                 else if(currChar.equals("]")){
-                    //String[] tempArray = new String[array.length + alternationList.size()];
-                    
                     
                     //code here to make the branch
                     State openingBracketState = stateStack.pop();
                     //prevState = openingBracketState;
                     connectPathTo(prevState, stateIndex);
                     prevState = newState;
-
 
                     for(int j = 0; j < alternationList.size(); j++){
                         
@@ -230,18 +177,12 @@ public class FSM {
                         if(j != 0)
                             prevState=bottomState;
 
-                        //addtoArray(new State(j+stateIndex, expression));
                     }
                     newState.setIndex(stateIndex);
                     newState.setExpression("☆");
                     connectPathTo(array[stateIndex-1], stateIndex);
                     prevState = openingBracketState;
 
-
-                    // for(int j = 0; j < alternationList.size(); j++)
-                    //     addtoArray(new State(j+stateIndex, expression));
-
-                    // stateIndex += alternationList.size();
                     ignoreNext = false;
                     stateIndex++;
                     addtoArray(newState);
@@ -263,11 +204,8 @@ public class FSM {
                     connectPathTo(prevState, stateIndex);
                     connectPathTo(array[stateIndex-3], stateIndex);
 
-
                     alternationCheck = -1;
                 }
-
-
 
                 if(alternationCheck < 10 && alternationCheck > -2){
                     ignoreNext = false;
@@ -276,18 +214,6 @@ public class FSM {
                     stateIndex++;
                     addtoArray(newState);
                 }
-                    
-
-                // //else if(prevState.getFirPath()==-1 && prevState.getIndex()!=0)
-                // else if(array[stateIndex-1].getFirPath()==-1)
-                //     array[stateIndex-1].setFirPath(stateIndex);
-
-                // //else if(prevState.getSecPath()==-1 && prevState.getIndex()!=0)
-                // else if(array[stateIndex-1].getSecPath()==-1)
-                //     array[stateIndex-1].setSecPath(stateIndex);
-
-                
-                
             }
         }
     }
@@ -303,11 +229,11 @@ public class FSM {
     
     public void addtoArray(State inputState) {
         State[] newArray = new State[array.length+1];
-                for (int j = 0; j < array.length; j++) {
-                    newArray[j] = array[j];
-                }
-                newArray[array.length] = inputState;
-                array = newArray;
+        for (int j = 0; j < array.length; j++) {
+            newArray[j] = array[j];
+        }
+        newArray[array.length] = inputState;
+        array = newArray;
     }
 
     public void print() {
@@ -315,5 +241,4 @@ public class FSM {
             System.err.println(state.getIndex()+": "+state.getExpression()+": " + state.getFirPath()+": "+state.getSecPath());
         }
     }
-
 }
