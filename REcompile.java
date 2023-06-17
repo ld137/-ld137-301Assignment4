@@ -12,6 +12,8 @@ public class REcompile {
 
         // String expression = args[0];
         String expression = "A(AA(ABZY))\\)C";
+        valid v = new valid(expression);
+        v.isValid();
         
         if(isValid(expression)){
             FSM fsm = new FSM(expression);
